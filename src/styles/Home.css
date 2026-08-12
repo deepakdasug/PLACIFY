@@ -1,0 +1,193 @@
+/* Home Page Styles */
+.home-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, var(--color-light-grey) 0%, var(--color-white) 100%);
+  padding: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.home-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  text-align: left;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.home-header {
+  margin-bottom: 1.5rem;
+  animation: slideDown 0.6s ease-out;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  text-align: left;
+  width: 100%;
+  padding-left: 1rem;
+}
+
+.h1-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.home-logo-wrapper {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  width: 100%;
+  margin: 0;
+  margin-top: 16px;
+  padding-left: 1rem;
+}
+
+.home-header h1 {
+  font-size: 48px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  font-family: 'Poppins', sans-serif;
+  margin: 0;
+  background: linear-gradient(to right, #1A1A2E, #1A6FBF);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: 2px 4px 12px rgba(26, 111, 191, 0.2);
+  position: relative;
+  display: inline-block;
+}
+
+.home-header h1::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 70px;
+  height: 4px;
+  background-color: #F5C842;
+  border-radius: 2px;
+}
+
+.home-logo {
+  width: 450px;
+  height: auto;
+  object-fit: contain;
+  display: block;
+  margin: 0 auto;
+  filter: drop-shadow(0px 8px 24px rgba(26, 111, 191, 0.25));
+  transition: transform 0.3s ease;
+}
+
+.home-logo:hover {
+  transform: scale(1.03);
+}
+
+.home-description {
+  background-color: var(--color-white);
+  border-radius: 12px;
+  padding: 2rem;
+  margin-bottom: 1.5rem;
+  box-shadow: var(--shadow-light);
+  border: 1px solid var(--color-medium-grey);
+}
+
+.home-description h2 {
+  color: var(--color-text-primary);
+  font-size: 1.75rem;
+  margin-bottom: 1.25rem;
+}
+
+.home-description p {
+  color: var(--color-text-secondary);
+  font-size: 1.1rem;
+  line-height: 1.8;
+  margin-bottom: 1.25rem;
+}
+
+.courses-preview {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+.course-card {
+  background-color: var(--color-light-grey);
+  padding: 1.5rem;
+  border-radius: 8px;
+  border: 1px solid var(--color-medium-grey);
+  transition: var(--transition);
+  text-align: left;
+}
+
+.course-card:hover {
+  box-shadow: var(--shadow-medium);
+  border-color: var(--color-accent-blue);
+  transform: translateY(-2px);
+}
+
+.course-card h3 {
+  color: var(--color-accent-blue);
+  margin-bottom: 0.75rem;
+  font-size: 1.25rem;
+}
+
+.course-card p {
+  color: var(--color-text-secondary);
+  font-size: 1rem;
+  margin: 0;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 768px) {
+  .home-header h1 {
+    font-size: 42px;
+  }
+
+  .home-header h1::after {
+    width: 60px;
+    height: 3px;
+    bottom: -8px;
+  }
+
+  .home-logo {
+    width: 400px;
+  }
+
+  .home-logo-wrapper {
+    margin-top: 16px;
+  }
+
+  .home-description {
+    padding: 1.5rem;
+  }
+
+  .home-actions {
+    gap: 0.75rem;
+  }
+
+  .home-actions button {
+    min-width: 150px;
+    padding: 0.75rem 1.5rem;
+    font-size: 0.95rem;
+  }
+
+  .courses-preview {
+    grid-template-columns: 1fr;
+  }
+}
