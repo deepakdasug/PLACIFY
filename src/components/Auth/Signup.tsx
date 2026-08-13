@@ -18,7 +18,7 @@ export const Signup: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [showCredentials, setShowCredentials] = useState(false);
   const [credentials, setCredentials] = useState({ studentId: '', name: '' });
-  const [countdown, setCountdown] = useState(3);
+  const [countdown, setCountdown] = useState(5);
   const { students, setStudents } = useStudentData();
   const navigate = useNavigate();
 
@@ -180,12 +180,12 @@ export const Signup: React.FC = () => {
       setShowCredentials(true);
       
       // Start countdown
-      setCountdown(3);
+      setCountdown(5);
       
       // Wait 3 seconds, then redirect to login page
       setTimeout(() => {
         navigate('/login');
-      }, 3000);
+      }, 5000);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Signup failed');
       setLoading(false);
