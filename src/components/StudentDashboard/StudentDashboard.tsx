@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import { Navbar } from '../Navbar/Navbar';
 import { PieChart } from '../PieChart/PieChart';
 import { useAuth } from '../../context/AuthContext';
@@ -11,6 +11,7 @@ import './StudentDashboard.css';
 export const StudentDashboard: React.FC = () => {
   const { user } = useAuth();
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
   const { students, isLoading, error } = useStudentData();
   const [studentData, setStudentData] = useState<Student | null>(null);
   const [performanceMetrics, setPerformanceMetrics] = useState<any[]>([]);
@@ -188,9 +189,18 @@ export const StudentDashboard: React.FC = () => {
         {studentData ? (
           <>
             {isTrainerView && (
-              <div className="alert alert-info" style={{ marginBottom: '1rem' }}>
-                <strong>👨‍🏫 Trainer View:</strong> Viewing {studentData.Student_Name}'s dashboard
-              </div>
+              <>
+                <div className="alert alert-info" style={{ marginBottom: '1rem' }}>
+                  <strong>👨‍🏫 Trainer View:</strong> Viewing {studentData.Student_Name}'s dashboard
+                </div>
+                <button
+                  className="btn-secondary"
+                  onClick={() => navigate('/trainer/dashboard')}
+                  style={{ marginBottom: '1rem', width: 'auto' }}
+                >
+                  ← Back to Trainer Dashboard
+                </button>
+              </>
             )}
 
             {/* Student Info Section */}
