@@ -6,8 +6,6 @@ import { Navbar } from '../Navbar/Navbar';
 import './Auth.css';
 
 export const Login: React.FC = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const [studentId, setStudentId] = useState('');
   const [studentName, setStudentName] = useState('');
   const [trainerId, setTrainerId] = useState('');

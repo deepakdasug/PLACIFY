@@ -1,6 +1,5 @@
 import { createContext, useContext, useState, type ReactNode } from 'react';
 import { type User, type AuthContextType, type Student } from '../utils/types';
-import { DEFAULT_USERS, VALID_CREDENTIALS } from '../utils/mockData';
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 

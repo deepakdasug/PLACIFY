@@ -1,9 +1,7 @@
-import { useNavigate } from 'react-router-dom';
 import { Navbar } from '../Navbar/Navbar';
 import '../../styles/Home.css';
 
 export const Home: React.FC = () => {
-  const navigate = useNavigate();
 
   return (
     <div className="home-container">

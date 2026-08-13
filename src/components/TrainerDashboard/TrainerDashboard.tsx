@@ -14,16 +14,11 @@ export const TrainerDashboard: React.FC = () => {
   const [isReloading, setIsReloading] = useState(false);
   const navigate = useNavigate();
 
-  // Check if there are unsaved students (for warning display only)
-  const unsavedStudents = JSON.parse(localStorage.getItem('unsavedStudents') || '[]');
-  const hasUnsavedStudents = unsavedStudents.length > 0;
-  
   // Use the students from context (already includes unsaved students merged during load)
   const allStudents = students;
 
-  // Get unique courses and statuses from all students
+  // Get unique courses from all students
   const uniqueCourses = Array.from(new Set(allStudents.map(s => s.Course)));
-  const uniqueStatuses = Array.from(new Set(allStudents.map(s => s.Placement_Status)));
 
   const handleViewStudentDashboard = () => {
     setSearchError('');
@@ -84,7 +79,6 @@ export const TrainerDashboard: React.FC = () => {
     // Check for various possible values indicating placement
     return status === 'selected' || status === 'placed' || status === 'selected ';
   }).length;
-  const placementRate = allStudents.length > 0 ? ((placedCount / allStudents.length) * 100).toFixed(2) : 0;
   const avgSkillScore = allStudents.length > 0 ? (allStudents.reduce((sum, s) => sum + s.Skill_Score, 0) / allStudents.length).toFixed(2) : 0;
   const avgCommunicationScore = allStudents.length > 0 ? (allStudents.reduce((sum, s) => sum + s.Communication_Score, 0) / allStudents.length).toFixed(2) : 0;
   const avgMockScore = allStudents.length > 0 ? (allStudents.reduce((sum, s) => sum + s.Mock_Average, 0) / allStudents.length).toFixed(2) : 0;

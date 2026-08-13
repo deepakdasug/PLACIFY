@@ -5,6 +5,7 @@ import { PieChart } from '../PieChart/PieChart';
 import { useAuth } from '../../context/AuthContext';
 import { useStudentData } from '../../context/StudentDataContext';
 import { type Student } from '../../utils/types';
+import { generateSkillRoadmap } from '../../utils/sarvamAI';
 import './StudentDashboard.css';
 
 export const StudentDashboard: React.FC = () => {
@@ -15,6 +16,9 @@ export const StudentDashboard: React.FC = () => {
   const [performanceMetrics, setPerformanceMetrics] = useState<any[]>([]);
   const [message, setMessage] = useState('');
   const [isTrainerView, setIsTrainerView] = useState(false);
+  const [roadmap, setRoadmap] = useState<any[]>([]);
+  const [isGeneratingRoadmap, setIsGeneratingRoadmap] = useState(false);
+  const [roadmapError, setRoadmapError] = useState('');
 
   useEffect(() => {
     const loadStudentData = () => {
@@ -131,6 +135,35 @@ export const StudentDashboard: React.FC = () => {
 
   const getPercentage = (score: number, maxScore: number) => {
     return Math.round((score / maxScore) * 100);
+  };
+
+  const handleGenerateRoadmap = async () => {
+    if (!studentData) return;
+
+    setIsGeneratingRoadmap(true);
+    setRoadmapError('');
+
+    try {
+      const weakSkills = performanceMetrics.filter(metric => {
+        const percentage = (metric.score / metric.maxScore) * 100;
+        return percentage < 60;
+      });
+
+      if (weakSkills.length === 0) {
+        setRoadmapError('Great job! All your skills are above 60%. Keep up the good work!');
+        setRoadmap([]);
+        setIsGeneratingRoadmap(false);
+        return;
+      }
+
+      const roadmapData = await generateSkillRoadmap(weakSkills, 60);
+      setRoadmap(roadmapData);
+    } catch (error) {
+      console.error('Error generating roadmap:', error);
+      setRoadmapError('Failed to generate roadmap. Please try again later.');
+    } finally {
+      setIsGeneratingRoadmap(false);
+    }
   };
 
   if (isLoading) {
@@ -333,6 +366,50 @@ export const StudentDashboard: React.FC = () => {
                     <li>Improve your attendance to maintain good academic standing.</li>
                   )}
                 </ul>
+              </div>
+
+              {/* AI Roadmap Section */}
+              <div className="roadmap-card">
+                <h3>🤖 AI-Powered Skill Roadmap</h3>
+                <p className="roadmap-description">
+                  Get personalized learning roadmaps for your weak skills using AI analysis
+                </p>
+                <button
+                  className="btn-generate-roadmap"
+                  onClick={handleGenerateRoadmap}
+                  disabled={isGeneratingRoadmap}
+                >
+                  {isGeneratingRoadmap ? '🔄 Generating Roadmap...' : '🚀 Generate AI Roadmap'}
+                </button>
+
+                {roadmapError && (
+                  <div className={`alert ${roadmapError.includes('Great job') ? 'alert-success' : 'alert-error'}`}>
+                    {roadmapError}
+                  </div>
+                )}
+
+                {roadmap.length > 0 && (
+                  <div className="roadmap-container">
+                    {roadmap.map((item, index) => (
+                      <div key={index} className="roadmap-item">
+                        <div className="roadmap-header">
+                          <h4 className="roadmap-skill">{item.skill}</h4>
+                          <div className="roadmap-scores">
+                            <span className="current-score">Current Score: {item.currentScore}</span>
+                          </div>
+                        </div>
+                        <div className="roadmap-steps">
+                          <h5>📋 Improvement Steps:</h5>
+                          <ol>
+                            {item.roadmap.map((step: string, stepIndex: number) => (
+                              <li key={stepIndex}>{step}</li>
+                            ))}
+                          </ol>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
           </>

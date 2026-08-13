@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext';
 import { useStudentData } from '../../context/StudentDataContext';
 import { type Student } from '../../utils/types';
 import { Navbar } from '../Navbar/Navbar';
@@ -20,7 +19,7 @@ export const Signup: React.FC = () => {
   const [showCredentials, setShowCredentials] = useState(false);
   const [credentials, setCredentials] = useState({ studentId: '', name: '' });
   const [countdown, setCountdown] = useState(3);
-  const { students, setStudents, reloadData } = useStudentData();
+  const { students, setStudents } = useStudentData();
   const navigate = useNavigate();
 
   // Get unique values from student data for dropdowns
@@ -162,7 +161,7 @@ export const Signup: React.FC = () => {
       
       // Also save to unsavedStudents for later Excel update (avoid duplicates)
       const unsavedStudents = JSON.parse(localStorage.getItem('unsavedStudents') || '[]');
-      const unsavedIds = new Set(unsavedStudents.map(s => s.Student_ID));
+      const unsavedIds = new Set(unsavedStudents.map((s: Student) => s.Student_ID));
       if (!unsavedIds.has(newStudentId)) {
         unsavedStudents.push(newStudent);
         localStorage.setItem('unsavedStudents', JSON.stringify(unsavedStudents));
@@ -195,7 +194,7 @@ export const Signup: React.FC = () => {
 
   // Countdown timer
   useEffect(() => {
-    let interval: NodeJS.Timeout;
+    let interval: ReturnType<typeof setInterval>;
     if (showCredentials && countdown > 0) {
       interval = setInterval(() => {
         setCountdown(prev => {
