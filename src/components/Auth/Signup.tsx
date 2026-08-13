@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useStudentData } from '../../context/StudentDataContext';
 import { type Student } from '../../utils/types';
+import { exportStudentsToExcel } from '../../utils/excelUtils';
 import { Navbar } from '../Navbar/Navbar';
 import './Auth.css';
 
@@ -19,6 +20,7 @@ export const Signup: React.FC = () => {
   const [showCredentials, setShowCredentials] = useState(false);
   const [credentials, setCredentials] = useState({ studentId: '', name: '' });
   const [countdown, setCountdown] = useState(5);
+  const [dataSaved, setDataSaved] = useState(false);
   const { students, setStudents } = useStudentData();
   const navigate = useNavigate();
 
@@ -33,7 +35,9 @@ export const Signup: React.FC = () => {
       const savedStudents = localStorage.getItem('allStudents');
       if (savedStudents) {
         console.log('Signup page: Loading latest students from localStorage');
-        setStudents(JSON.parse(savedStudents));
+        const parsedStudents = JSON.parse(savedStudents);
+        setStudents(parsedStudents);
+        console.log('Signup page: Loaded', parsedStudents.length, 'students from localStorage');
       }
     };
     loadLatestStudents();
@@ -172,6 +176,30 @@ export const Signup: React.FC = () => {
       setStudents(updatedStudents);
       console.log('Updated context state with', updatedStudents.length, 'students');
       
+      // Verify localStorage was updated
+      const verifyStudents = localStorage.getItem('allStudents');
+      console.log('Verification - localStorage allStudents:', verifyStudents ? JSON.parse(verifyStudents).length : 'null');
+      console.log('Verification - new student ID present:', verifyStudents ? JSON.parse(verifyStudents).find((s: Student) => s.Student_ID === newStudentId) : 'not found');
+      
+      // Trigger a custom event to notify other components of data change
+      window.dispatchEvent(new Event('studentsUpdated'));
+      console.log('Dispatched studentsUpdated event');
+      
+      // Indicate data has been saved
+      setDataSaved(true);
+      
+      // Automatically export updated Excel file with new student
+      try {
+        exportStudentsToExcel(updatedStudents, 'student_data_updated.xlsx');
+        console.log('Excel file exported automatically after signup');
+        
+        // Clear unsaved students after successful export
+        localStorage.removeItem('unsavedStudents');
+      } catch (exportErr) {
+        console.error('Auto-export failed:', exportErr);
+        // Don't block the signup process if export fails
+      }
+      
       // Set loading to false to allow popup to show
       setLoading(false);
       
@@ -182,7 +210,7 @@ export const Signup: React.FC = () => {
       // Start countdown
       setCountdown(5);
       
-      // Wait 3 seconds, then redirect to login page
+      // Wait 5 seconds, then redirect to login page
       setTimeout(() => {
         navigate('/login');
       }, 5000);
@@ -254,6 +282,12 @@ export const Signup: React.FC = () => {
               <p><strong>Your Student ID:</strong> {credentials.studentId}</p>
               <p><strong>Your Name:</strong> {credentials.name}</p>
             </div>
+            {dataSaved && (
+              <div className="alert alert-success" style={{ marginTop: '1rem', fontSize: '0.9rem' }}>
+                ✓ Your data has been saved and is now available in the system.<br/>
+                ✓ Updated Excel file has been downloaded automatically.
+              </div>
+            )}
             <p className="popup-timer">Redirecting to login in {countdown} seconds...</p>
           </div>
         ) : (

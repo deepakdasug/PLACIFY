@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Navbar } from '../Navbar/Navbar';
 import { useStudentData } from '../../context/StudentDataContext';
@@ -6,13 +6,40 @@ import { exportStudentsToExcel } from '../../utils/excelUtils';
 import './TrainerDashboard.css';
 
 export const TrainerDashboard: React.FC = () => {
-  const { students, isLoading, error, reloadData } = useStudentData();
+  const { students, isLoading, error, reloadData, setStudents } = useStudentData();
   const [studentId, setStudentId] = useState('');
   const [studentName, setStudentName] = useState('');
   const [searchError, setSearchError] = useState('');
   const [exportLoading, setExportLoading] = useState(false);
   const [isReloading, setIsReloading] = useState(false);
   const navigate = useNavigate();
+
+  // Reload data from localStorage when component mounts to ensure latest data
+  useEffect(() => {
+    const loadStudents = () => {
+      const savedStudents = localStorage.getItem('allStudents');
+      if (savedStudents) {
+        console.log('TrainerDashboard: Reloading students from localStorage');
+        const parsedStudents = JSON.parse(savedStudents);
+        console.log('TrainerDashboard: Loaded', parsedStudents.length, 'students');
+        setStudents(parsedStudents);
+      } else {
+        console.log('TrainerDashboard: No students found in localStorage');
+      }
+    };
+
+    loadStudents();
+
+    // Listen for custom event when students are updated
+    const handleStudentsUpdated = () => {
+      console.log('TrainerDashboard: Received studentsUpdated event, reloading data');
+      loadStudents();
+    };
+
+    window.addEventListener('studentsUpdated', handleStudentsUpdated);
+    return () => window.removeEventListener('studentsUpdated', handleStudentsUpdated);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Use the students from context (already includes unsaved students merged during load)
   const allStudents = students;

@@ -121,7 +121,7 @@ export const StudentDataProvider: React.FC<{ children: ReactNode }> = ({ childre
   // Load data on mount
   useEffect(() => {
     const loadData = async () => {
-      // First, try to load from localStorage (which has the latest data including new signups)
+      // Always try to load from localStorage first to get latest data including new signups
       const savedStudents = localStorage.getItem('allStudents');
       if (savedStudents) {
         console.log('Loading students from localStorage:', JSON.parse(savedStudents).length);
@@ -137,6 +137,34 @@ export const StudentDataProvider: React.FC<{ children: ReactNode }> = ({ childre
     };
 
     loadData();
+  }, []);
+
+  // Listen for storage changes to update data in real-time
+  useEffect(() => {
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'allStudents' && e.newValue) {
+        console.log('Detected localStorage change, reloading students');
+        setStudents(JSON.parse(e.newValue));
+      }
+    };
+
+    // Listen for custom event when students are updated
+    const handleStudentsUpdated = () => {
+      console.log('StudentDataContext: Received studentsUpdated event, reloading data');
+      const savedStudents = localStorage.getItem('allStudents');
+      if (savedStudents) {
+        setStudents(JSON.parse(savedStudents));
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    window.addEventListener('studentsUpdated', handleStudentsUpdated);
+    
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('studentsUpdated', handleStudentsUpdated);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const value: StudentDataContextType = {
